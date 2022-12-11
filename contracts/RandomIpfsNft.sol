@@ -21,7 +21,6 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
     bytes32 private immutable i_gaslane;
-    uint256 private immutable i_interval;
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
     uint256 internal immutable i_mintFee;
@@ -42,7 +41,6 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         bytes32 gaslane,
         uint64 subscriptionId,
         uint32 callbackGasLimit,
-        uint256 interval,
         string[3] memory tokenUris,
         uint256 mintFee
     ) VRFConsumerBaseV2(vrfCoordinatorV2) ERC721("Random IPFS NFT", "RIN") {
@@ -50,7 +48,6 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         i_gaslane = gaslane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
-        i_interval = interval;
         s_tokenUris = tokenUris;
         i_mintFee = mintFee;
         s_tokenCounter = 0;

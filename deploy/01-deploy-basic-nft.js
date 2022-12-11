@@ -1,4 +1,4 @@
-const { network, ethers } = require("hardhat");
+const { network } = require("hardhat");
 const { developmentChains } = require("../helper-hardhat-config");
 const { verify } = require("../utils/verify");
 
@@ -6,7 +6,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deployer } = await getNamedAccounts();
     const { deploy, log } = deployments;
 
-    const chainId = network.config.chainId;
+    // const chainId = network.config.chainId;
     const args = [];
     log("---------------------------------------");
     const basicNFT = await deploy("BasicNFT", {
