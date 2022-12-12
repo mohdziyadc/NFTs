@@ -45,7 +45,26 @@ async function storeImages(imagesLocation) {
         }
     }
 
+    //The responses array will contain the hash of each uploaded file
+
     return { responses, files };
 }
 
-module.exports = { storeImages };
+async function storeTokenUriMetadata(metadata) {
+    const options = {
+        pinataMetadata: {
+            name: metadata.name,
+        },
+    };
+
+    try {
+        const response = await pinata.pinJSONToIPFS(metadata, options);
+        return response;
+    } catch (e) {
+        console.log(e);
+    }
+
+    return null;
+}
+
+module.exports = { storeImages, storeTokenUriMetadata };
