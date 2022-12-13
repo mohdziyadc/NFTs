@@ -11,7 +11,11 @@ const {
 const { verify } = require("../utils/verify");
 
 const IMAGES_LOCATION = "./images/randomNft";
-let tokenUris;
+let tokenUris = [
+    "ipfs://QmaVkBn2tKmjbhphU7eyztbvSQU5EXDdqRyXZtRhSGgJGo",
+    "ipfs://QmYQC5aGZu2PTH8XzbJrbDnvhj3gVs7ya33H9mqUNvST3d",
+    "ipfs://QmZYmH5iDbD6v3U2ixoVAjioSzvWJszDzYdbeCLquGSpVm",
+];
 const FUND_AMOUNT = "1000000000000000000000"; //10 LINK
 
 const metadataTemplate = {
@@ -32,17 +36,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     const chainId = network.config.chainId;
     //Uploading NFT images to Pinata
-    if (process.env.UPLOAD_TO_PINATA == "true") {
-        tokenUris = await handleTokenUris();
-    }
+    // if (process.env.UPLOAD_TO_PINATA == "true") {
+    //     tokenUris = await handleTokenUris();
+    // }
     log("---------------------------------------");
 
-    let vrfV2MockAddress, subscriptionId;
+    let vrfV2MockAddress, subscriptionId, vrfV2Coordinator;
 
     if (developmentChains.includes(network.name)) {
-        const vrfV2Coordinator = await ethers.getContract(
-            "VRFCoordinatorV2Mock"
-        );
+        vrfV2Coordinator = await ethers.getContract("VRFCoordinatorV2Mock");
         vrfV2MockAddress = vrfV2Coordinator.address;
         const txResponse = await vrfV2Coordinator.createSubscription();
         const txReciept = await txResponse.wait(1);
@@ -75,6 +77,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     ) {
         log("Verifying.....");
         await verify(randomIpfsNft.address, args);
+    }
+
+    if (developmentChains.includes(network.name)) {
+        //to avoid Invalid Consumer error
+        vrfV2Coordinator.addConsumer(
+            subscriptionId.toNumber(),
+            randomIpfsNft.address
+        );
     }
     log("---------------------------------------");
 };

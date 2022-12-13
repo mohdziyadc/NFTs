@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 error RandomIpfsNft__RangeOutOfBounds();
 error RandomIpfsNft__NotEnoughETH();
 error RandomIpfsNft__TransferFailed();
+error RandomIpfsNft__AlreadyIntialized();
 
 contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     enum Breed {
@@ -24,6 +25,7 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
     uint256 internal immutable i_mintFee;
+    bool private s_intialized;
 
     mapping(uint256 => address) public s_requestIdToSender;
 
@@ -48,7 +50,7 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         i_gaslane = gaslane;
         i_subscriptionId = subscriptionId;
         i_callbackGasLimit = callbackGasLimit;
-        s_tokenUris = tokenUris;
+        _intialize(tokenUris);
         i_mintFee = mintFee;
         s_tokenCounter = 0;
     }
@@ -127,6 +129,14 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     //     uint256 tokenId
     // ) public view virtual override returns (string memory) {}
 
+    function _intialize(string[3] memory dogTokenUris) private {
+        if (s_intialized) {
+            revert RandomIpfsNft__AlreadyIntialized();
+        }
+        s_tokenUris = dogTokenUris;
+        s_intialized = true;
+    }
+
     function getChanceArray() public pure returns (uint256[3] memory) {
         return [10, 30, MAX_CHANCE_VALUE];
     }
@@ -141,5 +151,9 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
 
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
+    }
+
+    function getTokenUrisIntialized() public view returns (bool) {
+        return s_intialized;
     }
 }
