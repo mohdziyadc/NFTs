@@ -85,6 +85,65 @@ const {
           });
 
           describe("fulfillRandomWords", () => {
-              it("");
+              it("mints an NFT after a random number is requested", async () => {
+                  /**
+                   * 1. We need to request the random words by calling the requestRandomWords function in the mock contract.
+                   * 2. Then we need to call the fulfillRandomWords in the mock.
+                   * 3. Then we need to setup a listener which makes sure that our "NftMinted" event is
+                   * emitted.
+                   */
+                  //3
+                  await new Promise(async (resolve, reject) => {
+                      randomIpfsNft.once("NftMinted", async () => {
+                          try {
+                              const tokenCounter =
+                                  await randomIpfsNft.getTokenCounter();
+                              const dogTokenUriZero =
+                                  await randomIpfsNft.getDogTokenUri(0);
+                              assert.equal(tokenCounter.toString(), "1");
+                              assert(dogTokenUriZero.includes("ipfs://"));
+                              resolve();
+                          } catch (e) {
+                              console.log(e);
+                              reject(e);
+                          }
+                      });
+                      try {
+                          //1
+                          const requestNftTx = await randomIpfsNft.requestNft({
+                              value: mintFee,
+                          });
+                          const requestNftReceipt = await requestNftTx.wait(1);
+                          //2
+                          await vrfCoordinatorV2Mock.fulfillRandomWords(
+                              requestNftReceipt.events[1].args.requestId,
+                              randomIpfsNft.address
+                          );
+                      } catch (e) {
+                          console.log(e);
+                          reject(e);
+                      }
+                  });
+              });
+          });
+
+          describe("getBreedFromModdedRNG", () => {
+              it("returns a pug if moddedRng < 10", async () => {
+                  const pug = await randomIpfsNft.getBreedFromModdedRng(4);
+                  assert.equal(pug.toString(), "0");
+              });
+              it("returns a shiba inu if moddedRng >= 10 and < 30", async () => {
+                  const pug = await randomIpfsNft.getBreedFromModdedRng(10);
+                  assert.equal(pug.toString(), "1");
+              });
+              it("returns a st bernard if moddedRng >=30 and <100", async () => {
+                  const pug = await randomIpfsNft.getBreedFromModdedRng(30);
+                  assert.equal(pug.toString(), "2");
+              });
+              it("revert if moddedRng > 100", async () => {
+                  await expect(
+                      randomIpfsNft.getBreedFromModdedRng(100)
+                  ).to.be.revertedWith("RandomIpfsNft__RangeOutOfBounds");
+              });
           });
       });

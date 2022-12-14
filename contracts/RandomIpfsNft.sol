@@ -114,12 +114,14 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
          *
          */
         for (uint256 i = 0; i < chanceArray.length; i++) {
-            if (
-                moddedRng >= totalSum && moddedRng < totalSum + chanceArray[i]
-            ) {
+            if (moddedRng >= totalSum && moddedRng < chanceArray[i]) {
                 return Breed(i);
             } //Awesome Logic
-            totalSum += chanceArray[i];
+            // //Check PR --> Clone the rep and run it and if it persists request a PR
+            // if (moddedRng >= 30 && moddedRng < 40) {
+            //     return Breed(2);
+            // }
+            totalSum = chanceArray[i];
         }
         revert RandomIpfsNft__RangeOutOfBounds();
     }
