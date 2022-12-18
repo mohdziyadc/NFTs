@@ -21,8 +21,14 @@ const lowTokenUri =
               accounts = await ethers.getSigners();
               deployer = accounts[0];
               await deployments.fixture(["mocks", "dynamicsvg"]);
-              dynamicSvgNft = await ethers.getContract("DynamicSvgNFT");
-              mockV3Aggregator = await ethers.getContract("MockV3Aggregator");
+              dynamicSvgNft = await ethers.getContract(
+                  "DynamicSvgNFT",
+                  deployer
+              );
+              mockV3Aggregator = await ethers.getContract(
+                  "MockV3Aggregator",
+                  deployer
+              );
           });
 
           describe("constructor", () => {

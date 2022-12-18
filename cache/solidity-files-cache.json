@@ -831,7 +831,7 @@
       "artifacts": []
     },
     "/home/mohdziyadc/hardhat/hardhat-nft/contracts/DynamicSvgNFT.sol": {
-      "lastModificationDate": 1671371469399,
+      "lastModificationDate": 1671372086949,
       "contentHash": "346cf01fcdbf0f2e1be3737baaab03bb",
       "sourceName": "contracts/DynamicSvgNFT.sol",
       "solcConfig": {
