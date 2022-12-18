@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "base64-sol/base64.sol";
 
+error ERC721Metadata__URI_QueryFor_NonExistentToken();
+
 contract DynamicSvgNFT is ERC721 {
     uint256 private s_tokenCounter;
     string private i_highImg;
@@ -63,7 +65,10 @@ contract DynamicSvgNFT is ERC721 {
     function tokenURI(
         uint256 tokenId
     ) public view override returns (string memory) {
-        require(_exists(tokenId), "Check for nonexistent tokenIds");
+        // require(_exists(tokenId), "Check for nonexistent tokenIds");
+        // if (!_exists(tokenId)) {
+        //     revert ERC721Metadata__URI_QueryFor_NonExistentToken();
+        // }
 
         (, int256 price, , , ) = i_priceFeed.latestRoundData();
         //Dynamically changing
@@ -87,8 +92,9 @@ contract DynamicSvgNFT is ERC721 {
                         bytes(
                             abi.encodePacked(
                                 '{"name":"',
-                                name(),
-                                '", "description": "An NFT that changes based on the Chainlink Feed", "attributes": [{"trait_type": "coolness", "value": 100}], "image": "',
+                                name(), // You can add whatever name here
+                                '", "description":"An NFT that changes based on the Chainlink Feed", ',
+                                '"attributes": [{"trait_type": "coolness", "value": 100}], "image":"',
                                 imageURI,
                                 '"}'
                             )
@@ -100,5 +106,17 @@ contract DynamicSvgNFT is ERC721 {
 
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
+    }
+
+    function getLowSVG() public view returns (string memory) {
+        return i_lowImg;
+    }
+
+    function getHighSVG() public view returns (string memory) {
+        return i_highImg;
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return i_priceFeed;
     }
 }
